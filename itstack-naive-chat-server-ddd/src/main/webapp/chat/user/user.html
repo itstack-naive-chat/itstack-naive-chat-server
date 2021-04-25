@@ -3,8 +3,61 @@
 <head>
     <meta charset="utf-8">
     <title>用户中心</title>
-    <link rel="import" href="/res_layui.html"/>
-    <script src="js/user.js"></script>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/res/lib/layui-v2.5.4/css/layui.css" media="all">
+    <link rel="stylesheet" href="/res/css/public.css" media="all">
+
+    <script src="/res/lib/layui-v2.5.4/layui.js?v=1.0.4" charset="utf-8"></script>
+    <script src="/res/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+    <script>
+        layui.use(['form', 'table'], function () {
+            var $ = layui.jquery, form = layui.form, table = layui.table;
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var index = layer.msg("查询中，请稍后...", {icon: 16, time: false, shade: 0});
+
+                //执行搜索重载
+                table.reload('userTable', {
+                    where: {
+                        json: JSON.stringify(util.serializeObject(data.field))
+                    },
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+
+                }, 'data');
+                layer.close(index);
+                return false;
+            });
+        });
+
+        util = {
+            statusInfo: function (d) {
+                if (d.status === true) return '<span style="color: #5FB878;font-weight: bolder;">在线</span>';
+                if (d.status === false) return '<span style="color: #b8000e;font-weight: bolder;">下线</span>';
+            },
+            userHeadInfo: function (d) {
+                return '<img src="/chat/user/img/'+ d.userHead+'.png"/>';
+            },
+            formatDate: function (d) {
+                return layui.util.toDateString(d.entranceDate, 'yyyy-MM-dd HH:mm:ss');
+            },
+            //field="number|dateBegin|dateEnd"
+            serializeObject: function (obj) {
+                for (var c in obj) {
+                    if (obj[c].length === 0) {
+                        obj[c] = null;
+                        continue;
+                    }
+                }
+                return obj;
+            }
+        };
+    </script>
+
     <link rel="stylesheet" type="text/css" href="css/user.css">
 </head>
 <body>
